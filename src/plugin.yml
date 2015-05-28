@@ -1,10 +1,10 @@
 name: LibelulaAutoShop
-version: "1.0.2 Beta"
+version: "1.0.3-SNAPSHOT"
 main: me.libelula.autoshop.Main
 description: Libelula Automatic Shop Creation
 author: Diego Lucio D'Onofrio <ddonofrio@member.fsf.org>
 website: http://libelula.me
-depend: [Essentials, ChestShop]
+depend: [Essentials, ChestShop, Vault]
     
 commands:
     autoshop:
