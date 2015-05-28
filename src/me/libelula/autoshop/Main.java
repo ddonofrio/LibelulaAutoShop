@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
+
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
@@ -36,6 +37,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  *
  * @author guile
+ * @contributor Zivci
+ * 
  */
 public class Main extends JavaPlugin {
 
@@ -169,17 +172,38 @@ public class Main extends JavaPlugin {
             price = (float) (price * getConfig().getDouble("price-factor"));
         } else {
             price = params.price;
-        }
+        }        
+        String allowSelling = getConfig().getString("allow-selling");
         if (price == 0) {
             sendMessage(player, "This item has no price!");
         } else {
-            sign.setLine(0, "Admin Shop");
+        	String shopOwner = (String) (getConfig().getString("shop-owner"));
+        	if(shopOwner == null) {
+        		shopOwner = "Admin Shop";
+        	}
+            String decimalPoints = (String) (getConfig().getString("decimal-points"));
+        	if(decimalPoints == "true") {
+                decimalPoints = "%.2f";
+        	} else {
+        		decimalPoints = "%.0f";
+        	}
+        	sign.setLine(0, shopOwner); //seller
             sign.setLine(1, "" + quantity);
             price = Math.round(price * quantity * 100);
             price = price / 100;
-            String priceLine="B " + String.format( "%.2f", price);
-            priceLine = priceLine.replace(",", ".");
-            sign.setLine(2, priceLine);
+            String priceLine;
+            if(allowSelling.equalsIgnoreCase("true")){
+            	float sellWorth = getWorth(player.getItemInHand());
+                sellWorth = Math.round(sellWorth * quantity * 100);
+                sellWorth = sellWorth / 100;
+            	priceLine="B " + String.format( decimalPoints, price) + " : " + String.format( decimalPoints, sellWorth) + " S";
+                priceLine = priceLine.replace(",", ".");
+                sign.setLine(2, priceLine);
+            } else {
+                priceLine="B " + String.format( decimalPoints, price);
+                priceLine = priceLine.replace(",", ".");
+                sign.setLine(2, priceLine);
+            }
             String materialLine = player.getItemInHand().getType().name();
             Byte data = player.getItemInHand().getData().getData();
             if (data != 0) {
